@@ -13,7 +13,7 @@
         "most_recent": true
       },
       "ssh_username": "{{user `ssh_username`}}",
-      "ami_name": "ansible-cli {{timestamp}}"
+      "ami_name": "artemisv1-{{timestamp}}"
     }],
     "provisioners": [
         {
@@ -24,13 +24,21 @@
         {
           "type":  "shell",
           "inline": [
-              "sudo mv /tmp/r1soft.repo /etc/yum.repos.d/r1soft.repo",
-              "sudo yum update  -y",
-              "sudo  yum install serverbackup-enterprise-agent -y",
-              "sudo systemctl enable sbm-agent",
+              "sudo yum install git -y",
               "sudo yum install epel-release -y",
-              "sudo yum install  ansible -y"
+              "sudo yum install python-pip -y",
+              "sudo git clone --single-branch --branch {{user `version`}} https://github.com/farrukh90/artemis.git /artemis",
+              "sudo pip install flask",
+              "sudo pip install --upgrade pip",
+              "sudo cp -r /artemis/artemis.service /etc/systemd/system/",
+              "sudo systemctl daemon-reload",
+              "sudo systemctl start artemis",
+              "sudo systemctl enable artemis"
             ]
+        },
+        {
+          "type": "breakpoint",
+          "note": "Wait for you to delete"
         }
     ]
 }
